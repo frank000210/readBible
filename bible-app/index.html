@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#3b5e8c" />
+  <title>一年讀經一遍</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>一年讀經一遍</h1>
+    <nav class="tabs">
+      <button class="tab active" data-tab="today">今日</button>
+      <button class="tab" data-tab="list">進度表</button>
+      <button class="tab" data-tab="notes">感言</button>
+      <button class="tab" data-tab="settings">設定</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- 今日 -->
+    <section id="tab-today" class="panel active">
+      <div class="card today-card">
+        <div class="today-meta">
+          <div class="today-date" id="todayDate"></div>
+          <div class="today-day" id="todayDay"></div>
+        </div>
+        <h2 class="today-title" id="todayTitle">—</h2>
+        <div id="todayLinks" class="links"></div>
+        <label class="check-row">
+          <input type="checkbox" id="todayCheck" />
+          <span>標記為已讀</span>
+        </label>
+        <div class="reflection">
+          <label for="todayNote">今日讀經感言</label>
+          <textarea id="todayNote" rows="6" placeholder="記下今日的感動、看見、禱告……"></textarea>
+          <div class="reflection-actions">
+            <button id="saveTodayNote" class="btn primary">儲存感言</button>
+            <span class="save-hint" id="saveHint"></span>
+          </div>
+        </div>
+      </div>
+      <div class="card progress-card">
+        <h3>整體進度</h3>
+        <div class="progress-wrap">
+          <div class="progress-bar"><div id="progressFill" class="progress-fill"></div></div>
+          <div class="progress-text" id="progressText">0 / 365 天 (0%)</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 進度表 -->
+    <section id="tab-list" class="panel">
+      <div class="filter-bar">
+        <input type="search" id="searchInput" placeholder="搜尋書名或關鍵字（例：以賽亞、馬太、Day 100）" />
+        <select id="filterSelect">
+          <option value="all">全部</option>
+          <option value="done">已讀</option>
+          <option value="undone">未讀</option>
+        </select>
+      </div>
+      <div id="planList" class="plan-list"></div>
+    </section>
+
+    <!-- 感言 -->
+    <section id="tab-notes" class="panel">
+      <div class="card">
+        <h3>讀經感言記錄</h3>
+        <p class="hint">所有已撰寫的感言會列在下方，點擊可編輯。</p>
+        <div id="notesList" class="notes-list"></div>
+        <div id="notesEmpty" class="empty-state hidden">目前還沒有感言記錄。完成今日讀經後，到「今日」頁面寫下您的感言吧！</div>
+      </div>
+    </section>
+
+    <!-- 設定 -->
+    <section id="tab-settings" class="panel">
+      <div class="card">
+        <h3>讀經起始日</h3>
+        <p class="hint">設定您「第一天」對應的日期。今日讀經將依此計算。</p>
+        <input type="date" id="startDate" />
+        <div class="row-actions">
+          <button id="resetStartToday" class="btn">設為今天</button>
+          <button id="saveStartDate" class="btn primary">儲存</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>聖經文本連結</h3>
+        <p class="hint">選擇進度表「閱讀」按鈕連到的網站。</p>
+        <select id="bibleSource">
+          <option value="rcv_daily">恢復本網站 - 每日讀經 (f_day)</option>
+          <option value="rcv_book">恢復本網站 - 書本綱目 (Bx)</option>
+          <option value="bible_com">Bible.com - 恢復本繁中</option>
+        </select>
+        <div class="row-actions">
+          <button id="saveSource" class="btn primary">儲存來源</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>資料備份</h3>
+        <p class="hint">所有資料都儲存在您手機本機。建議定期匯出備份。</p>
+        <div class="row-actions">
+          <button id="exportData" class="btn">匯出 JSON</button>
+          <button id="importData" class="btn">匯入 JSON</button>
+          <button id="clearData" class="btn danger">清除全部資料</button>
+        </div>
+        <input type="file" id="importFile" accept="application/json" hidden />
+      </div>
+
+      <div class="card">
+        <h3>關於</h3>
+        <p class="hint small">
+          一年讀經一遍 v1.0｜內含 365 天標準讀經進度，連結到網上恢復本聖經。<br/>
+          資料完全儲存在本機（LocalStorage），不上傳到任何伺服器。
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <!-- 詳細日期 modal -->
+  <div id="dayModal" class="modal hidden">
+    <div class="modal-content">
+      <button class="modal-close" id="modalClose">×</button>
+      <div class="modal-day-meta">
+        <div class="modal-day-num" id="modalDayNum"></div>
+        <div class="modal-date" id="modalDate"></div>
+      </div>
+      <h2 id="modalTitle"></h2>
+      <div id="modalLinks" class="links"></div>
+      <label class="check-row">
+        <input type="checkbox" id="modalCheck" />
+        <span>標記為已讀</span>
+      </label>
+      <div class="reflection">
+        <label for="modalNote">讀經感言</label>
+        <textarea id="modalNote" rows="6" placeholder="記下這天的感動、看見、禱告……"></textarea>
+        <div class="reflection-actions">
+          <button id="modalSaveNote" class="btn primary">儲存感言</button>
+          <span class="save-hint" id="modalSaveHint"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js').catch(()=>{});
+      });
+    }
+  </script>
+</body>
+</html>

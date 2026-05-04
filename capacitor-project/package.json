@@ -1,0 +1,21 @@
+{
+  "name": "bible-reading",
+  "version": "1.0.0",
+  "description": "一年讀經一遍",
+  "private": true,
+  "scripts": {
+    "init": "npm install && npx cap init '一年讀經一遍' tw.bible.reading --web-dir=www",
+    "add-android": "npx cap add android",
+    "sync": "npx cap sync android",
+    "open": "npx cap open android",
+    "build-debug": "cd android && ./gradlew assembleDebug",
+    "build-release": "cd android && ./gradlew assembleRelease"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.0.0",
+    "@capacitor/core": "^6.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.0.0"
+  }
+}
